@@ -188,9 +188,9 @@ function IMInput(props:IIMInputProps) {
         const div = `<img id="${aiteID}" style="display: inline-block; width: 0px; height: 0px;">`;
         document.execCommand('insertHTML', false, div);
         // 拿到用于定位的imgdom
-        const aiteDom = document.querySelector(`#${aiteID}`);
-        coordinate.current.offsetLeft = (aiteDom as HTMLElement).offsetLeft;
-        coordinate.current.offsetTop = (aiteDom as HTMLElement).offsetTop;
+        const aiteDom = document.querySelector(`#${aiteID}`) as HTMLElement;
+        coordinate.current.offsetLeft = aiteDom.offsetLeft;
+        coordinate.current.offsetTop = aiteDom.offsetTop;
 
         // 定位完成后删除
         document.execCommand('Delete');
@@ -235,7 +235,11 @@ function IMInput(props:IIMInputProps) {
 
   function onFocus() {
     if (editPanelRef.current !== document.activeElement) {
-      focus();
+      // 解决滚动问题：只有在编辑框完全可见时才触发聚焦
+      const rect = editPanelRef.current.getBoundingClientRect();
+      if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        focus();
+      }
     }
   }
 
@@ -290,22 +294,22 @@ function useCursor(editPanelRef:RefObject<HTMLDivElement>) {
   // 获取光标
   function focus() {
     // 获取焦点
-    editPanelRef.current?.focus();
+    // editPanelRef.current?.focus();
 
     // 存在上一次光标位置，则还原光标位置
     if (lastEditRangeRef.current) {
-      const selection = getSelection();
-      selection?.removeAllRanges();
-      selection?.addRange(lastEditRangeRef.current);
+      // const selection = getSelection();
+      // selection?.removeAllRanges();
+      // selection?.addRange(lastEditRangeRef.current);
     }
   }
 
   // 备份光标
   function backupFocus() {
     // 获取选定对象
-    const selection = getSelection();
+    // const selection = getSelection();
     // 设置最后光标对象
-    lastEditRangeRef.current = selection?.getRangeAt(0);
+    // lastEditRangeRef.current = selection?.getRangeAt(0);
   }
 
   return {
